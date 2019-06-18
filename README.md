@@ -14,6 +14,6 @@ PS:由于最近没什么时间，部分功能还未优化比如，没爬取一�
 
 `python3 main.py -u http://target.com -d 1 -c cookie`
 
-![img](http://github.com/Qclover/jsspider/raw/master/images/cookie_arg.png)
+![img](https://raw.githubusercontent.com/Qclover/jsspider/master/images/cookie_arg.png)
 
 
