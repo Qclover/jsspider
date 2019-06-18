@@ -20,7 +20,7 @@ import hashlib
 
 class Topspider(object):
     """爬取类"""
-    def __init__(self, url, depth, threadNum, file):
+    def __init__(self, url, depth, threadNum, file,cookie):
         """Initialization parameters"""
         """Operating status"""
         self.status = False
@@ -44,6 +44,8 @@ class Topspider(object):
         """打开json文件"""
         self.re_json = json.load(open('patten.json', 'r', encoding='utf-8'))
         self.resfile = 'resault.txt'
+
+        self.Cookie={'Cookie':''}
         """初始化队列"""
         for url in urllist:
             self.urlQue.put({'url': url, "depth": int(depth)})
@@ -96,7 +98,7 @@ class Topspider(object):
             for x in urls:
                 url = x['url']
                 depth = x['depth']
-                print(type(depth))
+                #print(type(depth))
                 if depth == 0:
                     print(222)
                     tasks.append(asyncio.ensure_future(
@@ -171,6 +173,10 @@ class Topspider(object):
             dep = depth + 1
         # print(dep)
         page = await self.browser.newPage()
+        #print(args.cookie)
+        self.cookie={'Cookie':args.cookie}
+        print(self.cookie)
+        await page.setExtraHTTPHeaders(self.cookie)
         await page.evaluate(ajaxcode)
         await page.evaluate(Addcode)
         await page.goto(url)
@@ -188,6 +194,7 @@ class Topspider(object):
     async def Identify_content(self, url):
         """深度为0时，进行此函数。依靠正则爬取页面内容，可自定义。返回列表"""
         re_list = []
+        
         page = await self.browser.newPage()
         await page.goto(url)
         await page.waitFor(5000)
@@ -232,10 +239,8 @@ class Topspider(object):
               (?:"|')                               # End newline delimiter
             """
             regex=re.compile(regex_str, re.VERBOSE)
-            print(html)
             for m in re.finditer(regex,html):
                 mm.append(m.group(1))
-                print(m.group(1))
         else:
             mm = await page.title()
         re_list = [{url: mm}]
@@ -283,13 +288,17 @@ if __name__ == '__main__':
     group.add_argument(
         "-us", "--urls", help="set spider urls")
     parser.add_argument(
+    "-c", "--cookie", help="set cookie",default='')
+    parser.add_argument(
         "-t", "--threadNum", help="set threads num,default 3", default=1)
     parser.add_argument(
         '-f', '--file', help='set save path', default='file.txt')
     parser.add_argument(
         "-v", '--version', action='version', version='version 1.0')
+
     args = parser.parse_args()
     urllist = []
+    
     if args.urls:
         with open(args.urls, 'r') as f:
             for i in  f.read().split('\n'):
@@ -305,7 +314,7 @@ if __name__ == '__main__':
         if args.url:
             urllist.append(args.url)
 
-        spider = Topspider(urllist, args.depth, args.threadNum, args.file)
+        spider = Topspider(urllist, args.depth,args.threadNum, args.file,args.cookie)
         # info = printInfo(spider)
         spider.start()
         # info.printEnd()
