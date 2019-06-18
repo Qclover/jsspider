@@ -11,3 +11,7 @@ PS:由于最近没什么时间，部分功能还未优化比如，没爬取一�
 
 6月10日更新
 爬取时添加cookie参数，方便抓取登陆后的内容。
+
+`python3 main.py -u http://target.com -d 1 -c cookie`
+
+![img](https://github.com/Qclover/jsspider/blob/master/cookie_arg.png)
